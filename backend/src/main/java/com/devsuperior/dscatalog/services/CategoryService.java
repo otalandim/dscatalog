@@ -31,4 +31,12 @@ public class CategoryService {
         Category category = obj.orElseThrow(() -> new EntityNotFoundException("Entity not found"));
         return new CategoryDTO(category);
     }
+
+    @Transactional
+    public CategoryDTO create(CategoryDTO categoryDTO) {
+        Category category = new Category();
+        category.setName(categoryDTO.getName());
+        category = categoryRepository.save(category);
+        return new CategoryDTO(category);
+    }
 }
