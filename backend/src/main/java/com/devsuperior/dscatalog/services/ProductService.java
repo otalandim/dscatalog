@@ -1,11 +1,13 @@
 package com.devsuperior.dscatalog.services;
 
+import com.devsuperior.dscatalog.dto.CategoryDTO;
 import com.devsuperior.dscatalog.dto.ProductDTO;
+import com.devsuperior.dscatalog.entities.Category;
 import com.devsuperior.dscatalog.entities.Product;
+import com.devsuperior.dscatalog.repositories.CategoryRepository;
 import com.devsuperior.dscatalog.repositories.ProductRepository;
 import com.devsuperior.dscatalog.services.exceptions.DatabaseException;
 import com.devsuperior.dscatalog.services.exceptions.ResourceNotFoundException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -23,6 +25,9 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private CategoryRepository categoryRepository;
+
     @Transactional(readOnly = true)
     public Page<ProductDTO> findAllPaged(PageRequest pageRequest){
         Page<Product> list = productRepository.findAll(pageRequest);
@@ -39,7 +44,7 @@ public class ProductService {
     @Transactional
     public ProductDTO create(ProductDTO productDto) {
         Product product = new Product();
-        //Product.setName(ProductDTO.getName());
+        copyDtoToEntity(productDto, product);
         product = productRepository.save(product);
         return new ProductDTO(product);
     }
@@ -48,7 +53,7 @@ public class ProductService {
     public ProductDTO update(Long id, ProductDTO productDto) {
         try {
             Product product = productRepository.getOne(id);
-            //Product.setName(ProductDTO.getName());
+            copyDtoToEntity(productDto, product);
             product = productRepository.save(product);
             return new ProductDTO(product);
         } catch (EntityNotFoundException e) {
@@ -63,6 +68,20 @@ public class ProductService {
             throw new ResourceNotFoundException("Product not found");
         } catch (DataIntegrityViolationException d) {
             throw new DatabaseException("Internal server error");
+        }
+    }
+
+    private void copyDtoToEntity(ProductDTO productDto, Product product) {
+        product.setName(productDto.getName());
+        product.setDescription(productDto.getDescription());
+        product.setDate(productDto.getDate());
+        product.setImgUrl(productDto.getImgUrl());
+        product.setPrice(productDto.getPrice());
+        product.getCategories().clear();
+
+        for (CategoryDTO categoryDto : productDto.getCategories()) {
+            Category category = categoryRepository.getOne(categoryDto.getId());
+            product.getCategories().add(category);
         }
     }
 }
