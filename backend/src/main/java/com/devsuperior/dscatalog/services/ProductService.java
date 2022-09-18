@@ -8,6 +8,7 @@ import com.devsuperior.dscatalog.repositories.CategoryRepository;
 import com.devsuperior.dscatalog.repositories.ProductRepository;
 import com.devsuperior.dscatalog.services.exceptions.DatabaseException;
 import com.devsuperior.dscatalog.services.exceptions.ResourceNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -28,6 +29,9 @@ public class ProductService {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    private static final String PRODUCT_NOT_FOUND = "Product not found";
+    private static final String INTERNAL_SERVER_ERROR = "Internal server error";
+
     @Transactional(readOnly = true)
     public Page<ProductDTO> findAllPaged(PageRequest pageRequest){
         Page<Product> list = productRepository.findAll(pageRequest);
@@ -37,7 +41,7 @@ public class ProductService {
     @Transactional(readOnly = true)
     public ProductDTO findById(Long id) {
         Optional<Product> obj = productRepository.findById(id);
-        Product product = obj.orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+        Product product = obj.orElseThrow(() -> new ResourceNotFoundException(PRODUCT_NOT_FOUND));
         return new ProductDTO(product, product.getCategories());
     }
 
@@ -57,7 +61,7 @@ public class ProductService {
             product = productRepository.save(product);
             return new ProductDTO(product);
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException("Product not found");
+            throw new ResourceNotFoundException(PRODUCT_NOT_FOUND);
         }
     }
 
@@ -65,9 +69,9 @@ public class ProductService {
         try {
             productRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
-            throw new ResourceNotFoundException("Product not found");
+            throw new ResourceNotFoundException(PRODUCT_NOT_FOUND);
         } catch (DataIntegrityViolationException d) {
-            throw new DatabaseException("Internal server error");
+            throw new DatabaseException(INTERNAL_SERVER_ERROR);
         }
     }
 

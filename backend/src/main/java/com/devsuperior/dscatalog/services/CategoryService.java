@@ -5,6 +5,7 @@ import com.devsuperior.dscatalog.entities.Category;
 import com.devsuperior.dscatalog.repositories.CategoryRepository;
 import com.devsuperior.dscatalog.services.exceptions.DatabaseException;
 import com.devsuperior.dscatalog.services.exceptions.ResourceNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -22,6 +23,9 @@ public class CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    private static final String CATEGORY_NOT_FOUND = "Category not found";
+    private static final String INTERNAL_SERVER_ERROR = "Internal server error";
+
     @Transactional(readOnly = true)
     public Page<CategoryDTO> findAllPaged(PageRequest pageRequest){
         Page<Category> list = categoryRepository.findAll(pageRequest);
@@ -31,7 +35,7 @@ public class CategoryService {
     @Transactional(readOnly = true)
     public CategoryDTO findById(Long id) {
         Optional<Category> obj = categoryRepository.findById(id);
-        Category category = obj.orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+        Category category = obj.orElseThrow(() -> new ResourceNotFoundException(CATEGORY_NOT_FOUND));
         return new CategoryDTO(category);
     }
 
@@ -51,7 +55,7 @@ public class CategoryService {
             category = categoryRepository.save(category);
             return new CategoryDTO(category);
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException("Category not found");
+            throw new ResourceNotFoundException(CATEGORY_NOT_FOUND);
         }
     }
 
@@ -59,9 +63,9 @@ public class CategoryService {
         try {
             categoryRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
-            throw new ResourceNotFoundException("Category not found");
+            throw new ResourceNotFoundException(CATEGORY_NOT_FOUND);
         } catch (DataIntegrityViolationException d) {
-            throw new DatabaseException("Internal server error");
+            throw new DatabaseException(INTERNAL_SERVER_ERROR);
         }
     }
 }
