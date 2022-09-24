@@ -2,7 +2,8 @@ package com.devsuperior.dscatalog.repositories;
 
 import com.devsuperior.dscatalog.entities.Product;
 import com.devsuperior.dscatalog.utils.Factory;
-import org.junit.jupiter.api.Assertions;
+
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,20 +36,21 @@ public class ProductRepositoryTest {
 
         product = repository.save(product);
 
-        Assertions.assertNotNull(product.getId());
-        Assertions.assertEquals(totalProducts + 1, product.getId());
+        assertNotNull(product.getId());
+        assertEquals(totalProducts + 1, product.getId());
     }
 
     @Test
-    public void findShouldSearchByObjectWhenIdExists() {
+    public void findByIdShouldSearchByObjectWhenIdExists() {
         Optional<Product> res = repository.findById(existingId);
-        Assertions.assertTrue(res.isPresent());
+        assertEquals(1L, res.get().getId());
+        assertTrue(res.isPresent());
     }
 
     @Test
-    public void findShouldSearchByObjectWhenIdDoesExists() {
+    public void findByIdShouldSearchByObjectWhenIdDoesNotExists() {
         Optional<Product> res = repository.findById(noExistingId);
-        Assertions.assertFalse(res.isPresent());
+        assertTrue(res.isEmpty());
     }
 
     @Test
@@ -56,12 +58,12 @@ public class ProductRepositoryTest {
         repository.deleteById(existingId);
 
         Optional<Product> res = repository.findById(existingId);
-        Assertions.assertFalse(res.isPresent());
+        assertFalse(res.isPresent());
     }
 
     @Test
     public void deleteShouldThrowEmptyResultDataAccessExceptionWhenIdDoesNotExist(){
-        Assertions.assertThrows(EmptyResultDataAccessException.class, () -> {
+        assertThrows(EmptyResultDataAccessException.class, () -> {
             repository.deleteById(noExistingId);
         });
     }
