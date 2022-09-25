@@ -60,6 +60,13 @@ public class ProductServiceTest {
     }
 
     @Test
+    public void findByIdShouldReturnProductDtoWhenIdExist(){
+        ProductDTO res = service.findById(existingId);
+        Assertions.assertNotNull(res);
+        Assertions.assertEquals(existingId,res.getId());
+    }
+
+    @Test
     public void findAllPageShouldReturnPage(){
         Pageable pageable = PageRequest.of(0, 10);
         Page<ProductDTO> result = service.findAllPaged(pageable);
