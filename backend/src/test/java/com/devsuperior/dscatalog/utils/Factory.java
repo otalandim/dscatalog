@@ -16,12 +16,16 @@ public class Factory {
                 40.0,
                 "https://raw.githubusercontent.com/devsuperior/dscatalog-resources/master/backend/img/1-big.jpg",
                 Instant.parse("2020-07-13T20:50:07.12345Z"));
-        product.getCategories().add(new Category(1L, "Books"));
+        product.getCategories().add(createCategory());
         return product;
     }
 
-    public static ProductDTO creatProductDto(){
+    public static ProductDTO createProductDto(){
         Product prod = createProduct();
         return new ProductDTO(prod, prod.getCategories());
+    }
+
+    public static Category createCategory() {
+        return new Category(1L, "Books");
     }
 }
