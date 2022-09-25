@@ -1,8 +1,10 @@
 package com.devsuperior.dscatalog.services;
 
 import com.devsuperior.dscatalog.repositories.ProductRepository;
+
+import com.devsuperior.dscatalog.services.exceptions.ResourceNotFoundException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -10,8 +12,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @ExtendWith(SpringExtension.class)
 public class ProductServiceTest {
@@ -33,13 +33,21 @@ public class ProductServiceTest {
         Mockito.doThrow(EmptyResultDataAccessException.class).when(repository).deleteById(noExistingId);
     }
 
-    @DisplayName("when id exists, delete")
     @Test
     public void deleteShouldDoNothingWhenIdExists() {
-        assertDoesNotThrow(() -> {
+        Assertions.assertDoesNotThrow(() -> {
             service.delete(existingId);
         });
 
         Mockito.verify(repository, Mockito.times(1)).deleteById(existingId);
+    }
+
+    @Test
+    public void deleteShouldThrowEmptyResourceNotFoundExceptionWhenIdDoesNotExist () {
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> {
+            service.delete(noExistingId);
+        });
+
+        Mockito.verify(repository, Mockito.times(1)).deleteById(noExistingId);
     }
 }
