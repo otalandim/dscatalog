@@ -144,4 +144,24 @@ public class ProductResourceTest {
                 .andExpect(status().isCreated()
             );
     }
+
+    @Test
+    public void deleteShouldReturnNoContentWhenIdExist() throws Exception {
+        mockMvc
+            .perform(
+                delete("/products/{id}", existingId)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent()
+            );
+    }
+
+    @Test
+    public void deleteShouldReturnNoContentWhenIdDoesNotExist() throws Exception {
+        mockMvc
+            .perform(
+                delete("/products/{id}", noExistingId)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound()
+            );
+    }
 }
