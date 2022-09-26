@@ -56,6 +56,8 @@ public class ProductResourceTest {
         when(service.findById(existingId)).thenReturn(productDto);
         when(service.findById(noExistingId)).thenThrow(ResourceNotFoundException.class);
 
+        when(service.create(any())).thenReturn(productDto);
+
         when(service.update(eq(existingId), any())).thenReturn(productDto);
         when(service.update(eq(noExistingId), any())).thenThrow(ResourceNotFoundException.class);
 
@@ -125,6 +127,21 @@ public class ProductResourceTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound()
+            );
+    }
+
+
+    @Test
+    public void insertShouldReturnProductDto() throws Exception {
+        String jsonBody = objectMapper.writeValueAsString(productDto);
+
+        mockMvc
+            .perform(
+                post("/products")
+                .content(jsonBody)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated()
             );
     }
 }
