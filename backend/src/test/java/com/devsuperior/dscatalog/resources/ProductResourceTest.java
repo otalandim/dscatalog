@@ -2,6 +2,7 @@ package com.devsuperior.dscatalog.resources;
 
 import com.devsuperior.dscatalog.dto.ProductDTO;
 import com.devsuperior.dscatalog.services.ProductService;
+import com.devsuperior.dscatalog.services.exceptions.DatabaseException;
 import com.devsuperior.dscatalog.services.exceptions.ResourceNotFoundException;
 import com.devsuperior.dscatalog.utils.Factory;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,13 +16,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.eq;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.mockito.Mockito.*;
 
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,6 +39,7 @@ public class ProductResourceTest {
 
     private Long existingId;
     private Long noExistingId;
+    private Long dependentId;
     private ProductDTO productDto;
     private PageImpl<ProductDTO> page;
 
@@ -46,6 +47,7 @@ public class ProductResourceTest {
     public void setup(){
         existingId = 1L;
         noExistingId = 2L;
+        dependentId = 3L;
         productDto = Factory.createProductDto();
         page = new PageImpl<>(List.of(productDto));
 
@@ -56,6 +58,10 @@ public class ProductResourceTest {
 
         when(service.update(eq(existingId), any())).thenReturn(productDto);
         when(service.update(eq(noExistingId), any())).thenThrow(ResourceNotFoundException.class);
+
+        doNothing().when(service).delete(existingId);
+        doThrow(ResourceNotFoundException.class).when(service).delete(noExistingId);
+        doThrow(DatabaseException.class).when(service).delete(dependentId);
     }
 
     @Test
