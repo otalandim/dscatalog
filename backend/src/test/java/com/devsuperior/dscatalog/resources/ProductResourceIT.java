@@ -1,5 +1,8 @@
 package com.devsuperior.dscatalog.resources;
 
+import com.devsuperior.dscatalog.dto.ProductDTO;
+import com.devsuperior.dscatalog.utils.Factory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +23,9 @@ public class ProductResourceIT {
 
     @Autowired
     public MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     private Long existingId;
     private Long noExistingId;
@@ -46,4 +52,27 @@ public class ProductResourceIT {
                 .andExpect(jsonPath("$.content[2].name").value("PC Gamer Alfa")
             );
     }
+
+    @Test
+    public void updateShouldReturnProductDtoWhenIdExists() throws Exception {
+        ProductDTO productDto = Factory.createProductDto();
+        String jsonBody = objectMapper.writeValueAsString(productDto);
+
+        String expectedName = productDto.getName();
+        String expectedDescription = productDto.getDescription();
+
+        mockMvc
+            .perform(
+                put("/products/{id}", existingId)
+                .content(jsonBody)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(existingId))
+                .andExpect(jsonPath("$.name").value(expectedName))
+                .andExpect(jsonPath("$.description").value(expectedDescription)
+            );
+    }
+
+
 }
