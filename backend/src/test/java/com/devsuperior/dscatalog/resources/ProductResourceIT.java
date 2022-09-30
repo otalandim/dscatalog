@@ -74,5 +74,17 @@ public class ProductResourceIT {
             );
     }
 
+    @Test
+    public void updateShouldReturnNotFoundWhenIdDoesNotExist() throws Exception {
+        ProductDTO productDto = Factory.createProductDto();
+        String jsonBody = objectMapper.writeValueAsString(productDto);
 
+        mockMvc
+            .perform(
+                put("/products/{id}", noExistingId)
+                .content(jsonBody)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
 }
