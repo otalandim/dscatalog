@@ -14,6 +14,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +29,9 @@ public class UserService {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private BCryptPasswordEncoder bcryptPassEncoder;
 
     private static final String USER_NOT_FOUND = "User not found";
     private static final String INTERNAL_SERVER_ERROR = "Internal server error";
@@ -49,7 +53,7 @@ public class UserService {
     public UserDTO create(UserInsertDTO userDto) {
         User user = new User();
         copyDtoToEntity(userDto, user);
-        user.setPassword(userDto.getPassword());
+        user.setPassword(bcryptPassEncoder.encode(userDto.getPassword()));
         user = repository.save(user);
         return new UserDTO(user);
     }
