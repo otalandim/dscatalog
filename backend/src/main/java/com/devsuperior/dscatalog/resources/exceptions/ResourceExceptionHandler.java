@@ -10,33 +10,44 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.Instant;
 
 @ControllerAdvice
 public class ResourceExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<StandardError> notFoundException(ResourceNotFoundException entityNotFoundException, HttpServletRequest request) {
+    public ResponseEntity<StandardError> notFoundException(ResourceNotFoundException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
         StandardError standardError = new StandardError();
+        standardError.setTimestamp(Instant.now());
+        standardError.setStatus(status.value());
         standardError.setError("resource_not_found");
-        standardError.setMessage(entityNotFoundException.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(standardError);
+        standardError.setMessage(e.getMessage());
+        standardError.setPath(request.getRequestURI());
+        return ResponseEntity.status(status).body(standardError);
     }
 
     @ExceptionHandler(DatabaseException.class)
-    public ResponseEntity<StandardError> databaseException(DatabaseException databaseException, HttpServletRequest request) {
+    public ResponseEntity<StandardError> databaseException(DatabaseException db, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
         StandardError standardError = new StandardError();
+        standardError.setTimestamp(Instant.now());
+        standardError.setStatus(status.value());
         standardError.setError("database_exception");
-        standardError.setMessage(databaseException.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(standardError);
+        standardError.setMessage(db.getMessage());
+        standardError.setPath(request.getRequestURI());
+        return ResponseEntity.status(status).body(standardError);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<StandardError> validation(MethodArgumentNotValidException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
         StandardError standardError = new StandardError();
+        standardError.setTimestamp(Instant.now());
+        standardError.setStatus(status.value());
         standardError.setError("argument_not_valid_exception");
         standardError.setMessage(e.getMessage());
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(standardError);
+        standardError.setPath(request.getRequestURI());
+        return ResponseEntity.status(status).body(standardError);
     }
-
-
 }
