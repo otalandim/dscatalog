@@ -1,6 +1,5 @@
 package com.devsuperior.dscatalog.services.validation;
 
-
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.ElementType;
