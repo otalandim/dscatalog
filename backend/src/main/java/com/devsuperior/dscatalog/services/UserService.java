@@ -30,7 +30,7 @@ import java.util.Optional;
 @Service
 public class UserService implements UserDetailsService {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(UserService.class);
+    private static Logger logger = LoggerFactory.getLogger(UserService.class);
 
     @Autowired
     private UserRepository repository;
@@ -104,10 +104,10 @@ public class UserService implements UserDetailsService {
     public UserDetails loadUserByUsername (String username) throws UsernameNotFoundException {
         User user = repository.findByEmail(username);
         if(user == null){
-           LOGGER.error("User not found" + username);
+            logger.error("User not found" + username);
            throw new UsernameNotFoundException("Email not found");
         }
-        LOGGER.info("User found" + username);
+        logger.info("User found" + username);
         return user;
     }
 }
