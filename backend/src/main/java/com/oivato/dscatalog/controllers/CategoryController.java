@@ -1,13 +1,11 @@
 package com.oivato.dscatalog.controllers;
 
 import com.oivato.dscatalog.dtos.CategoryDTO;
-import com.oivato.dscatalog.entities.Category;
 import com.oivato.dscatalog.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
