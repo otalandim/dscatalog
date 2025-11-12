@@ -36,6 +36,10 @@ jobs:
       run: mvn test
       working-directory: ./backend
 
+    - name: Run arch unit tests
+      run: mvn test -Dtest=ArchUnitTest
+      working-directory: ./backend
+
     - name: Run mutation tests with PIT
       run: mvn org.pitest:pitest-maven:mutationCoverage
       working-directory: ./backend

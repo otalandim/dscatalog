@@ -2,9 +2,12 @@ package com.oivato.dscatalog.controllers;
 
 import com.oivato.dscatalog.dtos.CategoryDTO;
 import com.oivato.dscatalog.services.CategoryService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.List;
 
@@ -12,11 +15,14 @@ import java.util.List;
 @RequestMapping(value = "/categories")
 public class CategoryController {
 
+    private static final Log logger = LogFactory.getLog(CategoryController.class);
+
     @Autowired
     private CategoryService categoryService;
 
     @GetMapping
     public ResponseEntity<List<CategoryDTO>> findAll() {
+        logger.info("findAll() has been called");
         List<CategoryDTO> list = categoryService.findAll();
         return ResponseEntity.ok().body(list);
     }
