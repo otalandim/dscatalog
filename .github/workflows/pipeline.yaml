@@ -33,7 +33,7 @@ jobs:
       working-directory: ./backend
     
     - name: Run unit tests
-      run: mvn test
+      run: mvn test -Dtest=!ArchUnitTest
       working-directory: ./backend
 
     - name: Run arch unit tests
