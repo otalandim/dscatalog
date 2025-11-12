@@ -1,0 +1,1 @@
+[![CI](https://github.com/otalandim/dscatalog/actions/workflows/pipeline.yaml/badge.svg)](https://github.com/otalandim/dscatalog/actions/workflows/pipeline.yaml)
